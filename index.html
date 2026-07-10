@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#4b4b4b" />
-  <title>チケット</title>
+  <meta name="theme-color" content="#4d4d4d" />
+  <title>AUTH thru</title>
 
   <style>
     :root {
-      --page-bg: #4a4a4a;
-      --card-bg: #ffffff;
-      --text: #050505;
-      --muted: #767676;
-      --blue: #2589df;
-      --outer-gap: 5px;
-      --nav-height: 86px;
+      --ticket-bg: #4d4d4d;
+      --card-bg: #fff;
+      --text: rgba(0, 0, 0, .87);
+      --muted: #757575;
+      --teal: #00897b;
+      --blue: #1e88e5;
     }
 
     * {
@@ -22,19 +21,21 @@
     }
 
     html {
-      margin: 0;
       min-height: 100%;
-      background: #ffffff;
+      margin: 0;
+      background: #fff;
       overscroll-behavior-y: none;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
-      margin: 0;
       min-height: 100%;
+      margin: 0;
       overflow-x: hidden;
-      background: var(--page-bg);
+      background: var(--ticket-bg);
       color: var(--text);
       font-family:
+        Roboto,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
@@ -45,227 +46,229 @@
         sans-serif;
     }
 
-    body {
-      padding:
-        max(20px, env(safe-area-inset-top))
-        20px
-        max(20px, env(safe-area-inset-bottom));
-    }
-
     button {
       font: inherit;
     }
 
-    .app {
+    .page {
       width: 100%;
-      max-width: 760px;
-      min-width: 0;
-      min-height: calc(100svh - 40px);
-      margin: 0 auto;
+      min-height: 100vh;
+      min-height: 100svh;
       display: flex;
-      flex-direction: column;
-      gap: 18px;
+      justify-content: center;
+      align-items: flex-start;
+      padding:
+        max(12px, env(safe-area-inset-top))
+        0
+        max(12px, env(safe-area-inset-bottom));
+      background: var(--ticket-bg);
+    }
+
+    /*
+      원본의 xs용 col-11과 동일하게 화면 폭의 11/12만 사용합니다.
+      그래서 양쪽 회색 여백이 각각 약 4.16% 생깁니다.
+    */
+    .ticket-column {
+      flex: 0 0 91.6666667%;
+      width: 91.6666667%;
+      max-width: 600px;
+      min-width: 0;
     }
 
     .ticket-card {
       width: 100%;
       min-width: 0;
-      flex: 1;
       overflow: hidden;
+      border-radius: 4px;
       background: var(--card-bg);
-      border-radius: 7px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
+      box-shadow:
+        0 2px 4px -1px rgba(0, 0, 0, .2),
+        0 4px 5px 0 rgba(0, 0, 0, .14),
+        0 1px 10px 0 rgba(0, 0, 0, .12);
     }
 
-    .ticket-body {
-      min-width: 0;
-      padding: 0 28px;
-    }
-
-    /* logo.png를 이 영역에 표시합니다. */
-    .logo-area {
+    /*
+      원본 v-image의 padding-bottom:100%와 동일한 정사각형 이미지 영역입니다.
+    */
+    .cover {
       position: relative;
-      height: clamp(500px, 56svh, 680px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       overflow: hidden;
       background: #fff;
     }
 
-    .logo-area::before {
+    .cover::before {
       content: "logo.png";
       position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
       color: #d0d0d0;
-      font-size: 14px;
-      letter-spacing: 0.08em;
+      font-size: 12px;
     }
 
-    .logo-image {
+    .cover img {
       position: relative;
       z-index: 1;
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
     }
 
-    .event-info {
-      padding-top: 18px;
-      padding-bottom: 28px;
+    /*
+      원본 v-card__text + text-caption의 크기감을 그대로 축소 재현합니다.
+    */
+    .ticket-info {
+      padding: 16px;
+      font-size: .75rem;
+      line-height: 1.25rem;
+      color: #000;
     }
 
-    .eyebrow {
-      margin: 0 0 9px;
-      font-size: clamp(18px, 3.1vw, 23px);
-      font-weight: 800;
-      line-height: 1.3;
+    .performance-summary {
+      margin: 0;
+      font-weight: 700;
+      white-space: pre-wrap;
     }
 
-    .event-date {
-      margin: 0 0 8px;
-      max-width: 100%;
-      font-size: clamp(28px, 6.4vw, 43px);
-      font-weight: 900;
-      line-height: 1.18;
-      letter-spacing: 0;
-      white-space: normal;
+    .performance-date {
+      margin: 0;
+      padding: .2rem 0;
+      font-size: 1.5rem;
+      line-height: 1.8rem;
+      font-weight: 700;
       overflow-wrap: anywhere;
     }
 
-    .event-times,
-    .venue,
-    .address {
+    .time-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 16px;
+      font-weight: 700;
+    }
+
+    .venue-block {
+      padding-top: 4px;
+      font-weight: 700;
+    }
+
+    .venue-block p {
       margin: 0;
-      font-size: clamp(18px, 3.15vw, 23px);
-      font-weight: 800;
-      line-height: 1.55;
     }
 
-    .venue {
-      margin-top: 2px;
+    .info-section {
+      padding-top: 12px;
     }
 
-    .section {
-      margin-top: 22px;
-    }
-
-    .label {
-      margin: 0 0 4px;
+    .info-label {
+      margin: 0;
       color: var(--muted);
-      font-size: clamp(18px, 3.1vw, 23px);
-      font-weight: 800;
-      line-height: 1.35;
+      font-weight: 700;
     }
 
-    .seat,
-    .name {
+    .ticket-attr {
       margin: 0;
-      max-width: 100%;
-      font-size: clamp(27px, 6vw, 37px);
-      font-weight: 900;
-      line-height: 1.38;
-      letter-spacing: 0.02em;
+      font-size: 1.15rem;
+      line-height: 1.5rem;
+      font-weight: 700;
       overflow-wrap: anywhere;
       word-break: normal;
     }
 
-    .seat {
-      white-space: normal;
-    }
-
-    .perforation {
+    .roulette {
       position: relative;
-      height: 44px;
-      margin: 0 -28px;
+      width: calc(100% + 32px);
+      height: 2px;
+      margin: 28px -16px;
+      border-top: 2px dashed #000;
     }
 
-    .perforation::before {
+    .roulette::before,
+    .roulette::after {
       content: "";
       position: absolute;
-      left: 28px;
-      right: 28px;
-      top: 50%;
-      border-top: 3px dashed #191919;
+      top: -1px;
+      width: 30px;
+      height: 30px;
+      background: var(--ticket-bg);
       transform: translateY(-50%);
     }
 
-    .notch {
-      position: absolute;
-      top: 50%;
-      width: 43px;
-      height: 43px;
-      border-radius: 50%;
-      background: var(--page-bg);
-      transform: translateY(-50%);
+    .roulette::before {
+      left: 0;
+      border-radius: 0 100% 100% 0;
+      transform: translate(-50%, -50%);
     }
 
-    .notch.left {
-      left: -22px;
+    .roulette::after {
+      right: 0;
+      border-radius: 100% 0 0 100%;
+      transform: translate(50%, -50%);
     }
 
-    .notch.right {
-      right: -22px;
-    }
-
-    .ticket-bottom {
-      width: 100%;
-      min-width: 0;
-      min-height: 205px;
-      padding: 14px 28px 22px;
+    .shard {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 117px;
+      grid-template-columns: 2fr 1fr 1fr;
       align-items: center;
-      gap: 24px;
+      min-height: 128px;
+      gap: 4px;
+      padding-bottom: 16px;
     }
 
-    .ticket-button {
-      width: min(100%, 325px);
-      height: 68px;
-      border: 2px solid #ffffff;
-      outline: 2px solid var(--blue);
+    .ticket-action-cell {
+      min-width: 0;
+      padding-right: 4px;
+    }
+
+    .ticket-action {
+      width: 100%;
+      min-height: 56px;
+      border: 4px double #fff;
       border-radius: 0;
       background: var(--blue);
       color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
       cursor: pointer;
-      box-shadow: none;
     }
 
-    .ticket-button:active {
-      transform: translateY(1px);
-      filter: brightness(0.95);
+    .ticket-action:active {
+      filter: brightness(.94);
     }
 
-    .ticket-icon {
-      width: 34px;
-      height: 34px;
+    .ticket-action svg {
+      width: 28px;
+      height: 28px;
     }
 
-    /* face.jpg를 이 영역에 표시합니다. */
-    .portrait-frame {
+    .portrait-cell {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .portrait {
       position: relative;
-      width: 117px;
-      height: 157px;
-      align-self: end;
+      width: 78px;
+      height: 104px;
       overflow: hidden;
-      background: #f3f3f3;
+      background: #eee;
     }
 
-    .portrait-frame::before {
+    .portrait::before {
       content: "face.jpg";
       position: absolute;
       inset: 0;
       display: grid;
       place-items: center;
-      color: #b9b9b9;
-      font-size: 12px;
+      color: #aaa;
+      font-size: 10px;
     }
 
-    .portrait-image {
+    .portrait img {
       position: relative;
       z-index: 1;
       width: 100%;
@@ -277,202 +280,174 @@
 
     .bottom-nav {
       width: 100%;
-      min-width: 0;
-      height: var(--nav-height);
-      flex: 0 0 var(--nav-height);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      height: 56px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
       background: #fff;
-      border-top: 1px solid #d7d7d7;
-      box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, .6);
+      box-shadow:
+        0 2px 4px -1px rgba(0, 0, 0, .2),
+        0 4px 5px 0 rgba(0, 0, 0, .14),
+        0 1px 10px 0 rgba(0, 0, 0, .12);
     }
 
-    .nav-item {
-      appearance: none;
+    .nav-btn {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      max-width: 168px;
+      height: 56px;
       border: 0;
+      border-radius: 0;
       background: transparent;
-      color: #515151;
-      padding: 8px 4px 7px;
+      color: inherit;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       align-items: center;
       justify-content: center;
-      gap: 3px;
+      gap: 2px;
+      font-size: .75rem;
+      line-height: 1.2;
       cursor: pointer;
     }
 
-    .nav-item svg {
-      width: 30px;
-      height: 30px;
+    .nav-btn svg {
+      width: 23px;
+      height: 23px;
       stroke: currentColor;
     }
 
-    .nav-item span {
-      font-size: 16px;
-      line-height: 1.1;
-      white-space: nowrap;
+    .nav-btn.active {
+      color: var(--teal);
+      background: rgba(0, 137, 123, .08);
     }
 
+    /* ---------- 모달 ---------- */
 
-    /* ---------- modal ---------- */
     body.modal-open {
       overflow: hidden;
-      touch-action: none;
     }
 
-    .nav-item.active {
-      color: #087b72;
-      background: rgba(8, 123, 114, 0.10);
-    }
-
-    .modal-layer {
+    .overlay {
       position: fixed;
       inset: 0;
-      z-index: 1000;
+      z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      padding:
-        max(18px, env(safe-area-inset-top))
-        14px
-        max(18px, env(safe-area-inset-bottom));
-      background: rgba(0, 0, 0, 0.56);
-      overscroll-behavior: contain;
+      padding: 24px;
+      background: rgba(0, 0, 0, .54);
     }
 
-    .modal-layer.is-open {
+    .overlay.open {
       display: flex;
     }
 
-    .modal-panel {
-      width: min(100%, 720px);
-      max-height: calc(100svh - 36px);
+    .dialog {
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      max-height: 90svh;
       overflow: hidden;
-      border-radius: 8px;
+      border-radius: 4px;
       background: #fff;
-      color: #171717;
-      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.32);
-      animation: modal-in 160ms ease-out;
+      box-shadow:
+        0 11px 15px -7px rgba(0, 0, 0, .2),
+        0 24px 38px 3px rgba(0, 0, 0, .14),
+        0 9px 46px 8px rgba(0, 0, 0, .12);
     }
 
-    @keyframes modal-in {
-      from {
-        opacity: 0;
-        transform: translateY(10px) scale(0.985);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .detail-modal {
-      display: grid;
-      grid-template-rows: minmax(0, 1fr) auto;
+    .detail-dialog {
+      display: flex;
+      flex-direction: column;
     }
 
     .detail-scroll {
       overflow-y: auto;
+      padding: 24px;
       -webkit-overflow-scrolling: touch;
-      padding: 34px 44px 26px;
     }
 
     .detail-row {
-      padding: 0 6px 22px;
-      border-bottom: 1px solid #d7d7d7;
+      padding: 0 4px 16px;
+      border-bottom: 1px solid #ddd;
     }
 
     .detail-row + .detail-row {
-      padding-top: 22px;
+      padding-top: 16px;
     }
 
     .detail-label {
-      margin: 0 0 10px;
-      color: #777;
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.25;
+      margin: 0 0 8px;
+      color: #757575;
+      font-size: 1rem;
+      font-weight: 700;
     }
 
     .detail-value {
       margin: 0;
-      font-size: 25px;
-      font-weight: 800;
-      line-height: 1.42;
-    }
-
-    .detail-value.seat-value {
-      font-size: 27px;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      font-weight: 700;
+      overflow-wrap: anywhere;
     }
 
     .notice {
-      padding: 27px 6px 10px;
+      padding: 22px 4px 4px;
     }
 
     .notice-title {
-      margin: 0 0 28px;
-      font-size: 25px;
-      font-weight: 500;
+      margin: 0 0 18px;
+      font-size: 1.15rem;
     }
 
     .notice-list {
       margin: 0;
-      padding-left: 42px;
-      font-size: 21px;
+      padding-left: 28px;
+      font-size: 1rem;
       line-height: 1.65;
     }
 
-    .detail-footer {
-      padding: 13px 34px 20px;
-      border-top: 1px solid #ececec;
-      background: #fff;
+    .dialog-actions {
+      flex: 0 0 auto;
+      padding: 8px 16px 12px;
       text-align: right;
+      border-top: 1px solid #eee;
     }
 
-    .modal-close {
-      appearance: none;
+    .close-btn {
       border: 0;
       background: transparent;
       color: #555;
-      padding: 8px 10px;
-      font-size: 20px;
+      padding: 10px;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
     }
 
-    .qr-modal-panel {
-      width: min(calc(100vw - 28px), 720px);
-      padding: clamp(26px, 5vw, 50px);
-      border-radius: 8px;
+    .qr-dialog {
+      padding: 32px;
     }
 
-    .qr-image-wrap {
+    .qr-box {
       position: relative;
       width: 100%;
       aspect-ratio: 1 / 1;
       overflow: hidden;
-      background:
-        linear-gradient(45deg, #f5f5f5 25%, transparent 25%) 0 0 / 22px 22px,
-        linear-gradient(-45deg, #f5f5f5 25%, transparent 25%) 0 11px / 22px 22px,
-        linear-gradient(45deg, transparent 75%, #f5f5f5 75%) 11px -11px / 22px 22px,
-        linear-gradient(-45deg, transparent 75%, #f5f5f5 75%) -11px 0 / 22px 22px,
-        #fff;
+      background: #fff;
     }
 
-    .qr-image-wrap::before {
+    .qr-box::before {
       content: "qr.png";
       position: absolute;
       inset: 0;
       display: grid;
       place-items: center;
       color: #aaa;
-      font-size: 16px;
-      letter-spacing: 0.08em;
     }
 
-    .qr-image {
+    .qr-box img {
       position: relative;
       z-index: 1;
       width: 100%;
@@ -485,341 +460,183 @@
 
     .toast {
       position: fixed;
-      z-index: 1100;
-      top: max(18px, env(safe-area-inset-top));
+      z-index: 120;
+      top: max(16px, env(safe-area-inset-top));
       left: 50%;
-      width: min(calc(100vw - 28px), 720px);
-      transform: translate(-50%, -14px);
-      padding: 22px 30px;
-      border-radius: 7px;
-      background: #4998e7;
+      width: min(calc(100% - 32px), 600px);
+      padding: 16px 20px;
+      border-radius: 4px;
+      background: #42a5f5;
       color: #fff;
-      font-size: clamp(18px, 4vw, 25px);
-      line-height: 1.35;
-      box-shadow: 0 7px 18px rgba(0, 0, 0, 0.25);
+      box-shadow:
+        0 3px 5px -1px rgba(0, 0, 0, .2),
+        0 6px 10px 0 rgba(0, 0, 0, .14),
+        0 1px 18px 0 rgba(0, 0, 0, .12);
       opacity: 0;
+      transform: translate(-50%, -8px);
       pointer-events: none;
-      transition:
-        opacity 180ms ease,
-        transform 180ms ease;
+      transition: .18s ease;
     }
 
-    .toast.is-visible {
+    .toast.show {
       opacity: 1;
       transform: translate(-50%, 0);
     }
 
-    @media (max-width: 520px) {
-      .modal-layer {
-        padding: max(18px, env(safe-area-inset-top)) 14px
-          max(18px, env(safe-area-inset-bottom));
+    @media (min-width: 600px) {
+      .ticket-column {
+        flex-basis: 58.3333333%;
+        width: 58.3333333%;
+      }
+    }
+
+    @media (min-width: 960px) {
+      .ticket-column {
+        flex-basis: 25%;
+        width: 25%;
+        min-width: 360px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .ticket-info {
+        padding: 16px;
+      }
+
+      .performance-date {
+        font-size: 1.5rem;
+        line-height: 1.8rem;
+      }
+
+      .ticket-attr {
+        font-size: 1.15rem;
+        line-height: 1.5rem;
+      }
+
+      .overlay {
+        padding: 16px;
       }
 
       .detail-scroll {
-        padding: 28px 27px 20px;
+        padding: 22px 20px;
       }
 
-      .detail-label {
-        font-size: 18px;
-      }
-
-      .detail-value {
-        font-size: 21px;
-      }
-
-      .detail-value.seat-value {
-        font-size: clamp(18px, 4.8vw, 22px);
-        white-space: normal;
-      }
-
-      .notice-title {
-        margin-bottom: 20px;
-        font-size: 21px;
-      }
-
-      .notice-list {
-        padding-left: 31px;
-        font-size: 18px;
-      }
-
-      .detail-footer {
-        padding: 10px 25px 15px;
-      }
-
-      .modal-close {
-        font-size: 18px;
-      }
-
-      .qr-modal-panel {
-        padding: 28px;
-      }
-    }
-
-    @media (max-width: 520px) {
-      :root {
-        --nav-height: 78px;
-      }
-
-      body {
-        padding:
-          max(16px, env(safe-area-inset-top))
-          16px
-          max(16px, env(safe-area-inset-bottom));
-      }
-
-      .app {
-        min-height: calc(100svh - 32px);
-        gap: 16px;
-      }
-
-      .ticket-body {
-        padding: 0 28px;
-      }
-
-      .logo-area {
-        height: clamp(500px, 58svh, 650px);
-      }
-
-      .event-info {
-        padding-top: 18px;
-        padding-bottom: 24px;
-      }
-
-      .eyebrow {
-        font-size: clamp(18px, 4.5vw, 22px);
-      }
-
-      .event-date {
-        font-size: clamp(27px, 7.1vw, 36px);
-      }
-
-      .event-times,
-      .venue,
-      .address {
-        font-size: clamp(17px, 4.4vw, 21px);
-      }
-
-      .label {
-        font-size: clamp(17px, 4.4vw, 21px);
-      }
-
-      .seat,
-      .name {
-        font-size: clamp(27px, 7vw, 35px);
-      }
-
-      .perforation {
-        margin: 0 -28px;
-      }
-
-      .perforation::before {
-        left: 28px;
-        right: 28px;
-      }
-
-      .ticket-bottom {
-        min-height: 190px;
-        grid-template-columns: minmax(0, 1fr) 112px;
-        gap: 18px;
-        padding: 16px 28px 22px;
-      }
-
-      .portrait-frame {
-        width: 112px;
-        height: 150px;
-      }
-
-      .ticket-button {
-        height: 62px;
-      }
-
-      .nav-item span {
-        font-size: 15px;
-      }
-    }
-
-    @media (max-width: 390px) {
-      body {
-        padding-left: 10px;
-        padding-right: 10px;
-      }
-
-      .app {
-        gap: 10px;
-      }
-
-      .ticket-body {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-
-      .logo-area {
-        height: clamp(450px, 55svh, 590px);
-      }
-
-      .event-date {
-        font-size: clamp(25px, 7vw, 31px);
-      }
-
-      .event-times,
-      .venue,
-      .address,
-      .eyebrow {
-        font-size: clamp(16px, 4.4vw, 19px);
-      }
-
-      .seat,
-      .name {
-        font-size: clamp(25px, 7vw, 31px);
-      }
-
-      .perforation {
-        margin-left: -24px;
-        margin-right: -24px;
-      }
-
-      .perforation::before {
-        left: 24px;
-        right: 24px;
-      }
-
-      .ticket-bottom {
-        grid-template-columns: minmax(0, 1fr) 96px;
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-
-      .portrait-frame {
-        width: 96px;
-        height: 128px;
+      .qr-dialog {
+        padding: 24px;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="app">
-    <section class="ticket-card">
-      <div class="ticket-body">
-        <div class="logo-area">
-          <!-- 같은 폴더에 logo.png를 넣으세요. -->
+  <main class="page">
+    <div class="ticket-column">
+      <section class="ticket-card">
+        <div class="cover">
           <img
-            class="logo-image"
             src="./logo.png"
             alt="Bloom Garden Party"
             onerror="this.style.display='none'"
           />
         </div>
 
-        <div class="event-info">
-          <p class="eyebrow">7月11日（土）16:00公演</p>
+        <div class="ticket-info">
+          <p class="performance-summary">7月11日（土）16:00公演</p>
+          <h1 class="performance-date">2026年7月11日（土）16:00</h1>
 
-          <h1 class="event-date">2026年7月11日（土）16:00</h1>
-
-          <p class="event-times">[開場] 14:00　[開演] 16:00</p>
-          <p class="venue">ベルーナドーム</p>
-          <p class="address">埼玉県所沢市上山口2135</p>
-
-          <div class="section">
-            <p class="label">座席番号</p>
-            <p class="seat">アリーナ　ハナショウブ２ブロック　6列　11番</p>
+          <div class="time-row">
+            <span>[開場] 14:00</span>
+            <span>[開演] 16:00</span>
           </div>
 
-          <div class="section">
-            <p class="label">氏名</p>
-            <p class="name">イ　スンミン</p>
+          <div class="venue-block">
+            <p>ベルーナドーム</p>
+            <p>埼玉県所沢市上山口2135</p>
+          </div>
+
+          <section class="info-section">
+            <p class="info-label">座席番号</p>
+            <p class="ticket-attr">ネット裏　２１６ブロック　16列　85番</p>
+          </section>
+
+          <section class="info-section">
+            <p class="info-label">氏名</p>
+            <p class="ticket-attr">ジョン　ドンフン</p>
+          </section>
+
+          <div class="roulette" aria-hidden="true"></div>
+
+          <div class="shard">
+            <div class="ticket-action-cell">
+              <button
+                id="mainTicketButton"
+                class="ticket-action"
+                type="button"
+                aria-label="QRコードを表示"
+              >
+                <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                  <path
+                    d="M5 8.5h22v5a3 3 0 0 0 0 5v5H5v-5a3 3 0 0 0 0-5v-5Z"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M16 10.5v2M16 15v2M16 19.5v2"
+                    stroke="currentColor"
+                    stroke-width="2.3"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div></div>
+
+            <div class="portrait-cell">
+              <div class="portrait">
+                <img
+                  src="./face.jpg"
+                  alt="本人写真"
+                  onerror="this.style.display='none'"
+                />
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="perforation" aria-hidden="true">
-          <span class="notch left"></span>
-          <span class="notch right"></span>
-        </div>
-      </div>
-
-      <div class="ticket-bottom">
-        <button class="ticket-button" type="button" aria-label="チケットを表示">
-          <svg class="ticket-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path
-              d="M5 8.5h22v5a3 3 0 0 0 0 5v5H5v-5a3 3 0 0 0 0-5v-5Z"
-              stroke="currentColor"
-              stroke-width="2.7"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M16 10.5v2M16 15v2M16 19.5v2"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-            />
+      <nav class="bottom-nav" aria-label="チケットメニュー">
+        <button class="nav-btn" type="button" onclick="history.back()">
+          <span>戻る</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 5 8 12l7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
 
-        <div class="portrait-frame">
-          <!-- 같은 폴더에 face.jpg를 넣으세요. -->
-          <img
-            class="portrait-image"
-            src="./face.jpg"
-            alt="本人写真"
-            onerror="this.style.display='none'"
-          />
-        </div>
-      </div>
-    </section>
+        <button id="detailButton" class="nav-btn" type="button">
+          <span>チケット詳細</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 7h12M6 12h12M6 17h12" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
 
-    <nav class="bottom-nav" aria-label="チケットメニュー">
-      <button class="nav-item" type="button" onclick="history.back()">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M15 5 8 12l7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span>戻る</span>
-      </button>
-
-      <button
-        id="detailNavButton"
-        class="nav-item"
-        type="button"
-        aria-haspopup="dialog"
-        aria-controls="detailModal"
-        aria-expanded="false"
-      >
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 7h12M6 12h12M6 17h12" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span>チケット詳細</span>
-      </button>
-
-      <button
-        id="qrNavButton"
-        class="nav-item"
-        type="button"
-        aria-haspopup="dialog"
-        aria-controls="qrModal"
-        aria-expanded="false"
-      >
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 4h5v5H4zM15 4h5v5h-5zM4 15h5v5H4z" stroke-width="1.8"/>
-          <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2zM16 16h2v2h-2z" fill="currentColor" stroke="none"/>
-        </svg>
-        <span>QRコード</span>
-      </button>
-    </nav>
-
+        <button id="qrButton" class="nav-btn" type="button">
+          <span>QRコード</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 4h5v5H4zM15 4h5v5h-5zM4 15h5v5H4z" stroke-width="1.8"/>
+            <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2zM16 16h2v2h-2z" fill="currentColor" stroke="none"/>
+          </svg>
+        </button>
+      </nav>
+    </div>
   </main>
 
-  <!-- チケット詳細 -->
-  <div
-    id="detailModal"
-    class="modal-layer"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="detailModalTitle"
-    aria-hidden="true"
-  >
-    <section class="modal-panel detail-modal">
+  <div id="detailOverlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <section class="dialog detail-dialog">
       <div class="detail-scroll">
         <div class="detail-row">
-          <p id="detailModalTitle" class="detail-label">公演日</p>
+          <p class="detail-label">公演日</p>
           <p class="detail-value">2026年7月11日（土）16:00</p>
         </div>
 
@@ -845,12 +662,12 @@
 
         <div class="detail-row">
           <p class="detail-label">座席番号</p>
-          <p class="detail-value seat-value">アリーナ　ハナショウブ２ブロック　6列　11番</p>
+          <p class="detail-value">ネット裏　２１６ブロック　16列　85番</p>
         </div>
 
         <div class="detail-row">
           <p class="detail-label">氏名</p>
-          <p class="detail-value">イ　スンミン</p>
+          <p class="detail-value">ジョン　ドンフン</p>
         </div>
 
         <div class="notice">
@@ -865,26 +682,16 @@
         </div>
       </div>
 
-      <footer class="detail-footer">
-        <button class="modal-close" type="button" data-close-modal>閉じる</button>
-      </footer>
+      <div class="dialog-actions">
+        <button class="close-btn" type="button" data-close>閉じる</button>
+      </div>
     </section>
   </div>
 
-  <!-- QRコード -->
-  <div
-    id="qrModal"
-    class="modal-layer"
-    role="dialog"
-    aria-modal="true"
-    aria-label="QRコード"
-    aria-hidden="true"
-  >
-    <section class="modal-panel qr-modal-panel">
-      <div class="qr-image-wrap">
-        <!-- 같은 폴더에 qr.png를 넣으세요. -->
+  <div id="qrOverlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <section class="dialog qr-dialog">
+      <div class="qr-box">
         <img
-          class="qr-image"
           src="./qr.png"
           alt="入場用QRコード"
           onerror="this.style.display='none'"
@@ -893,125 +700,88 @@
     </section>
   </div>
 
-  <div id="tapAgainToast" class="toast" role="status" aria-live="polite">
+  <div id="toast" class="toast" role="status" aria-live="polite">
     もう一度タップすると元に戻ります
   </div>
 
   <script>
     (() => {
-      const detailModal = document.getElementById("detailModal");
-      const qrModal = document.getElementById("qrModal");
-      const detailButton = document.getElementById("detailNavButton");
-      const qrButton = document.getElementById("qrNavButton");
-      const ticketButton = document.querySelector(".ticket-button");
-      const toast = document.getElementById("tapAgainToast");
+      const detailOverlay = document.getElementById("detailOverlay");
+      const qrOverlay = document.getElementById("qrOverlay");
+      const detailButton = document.getElementById("detailButton");
+      const qrButton = document.getElementById("qrButton");
+      const mainTicketButton = document.getElementById("mainTicketButton");
+      const toast = document.getElementById("toast");
 
-      let activeModal = null;
-      let previousFocus = null;
+      let activeOverlay = null;
       let toastTimer = null;
 
-      const modalButtonMap = new Map([
-        [detailModal, detailButton],
-        [qrModal, qrButton],
-      ]);
+      function hideToast() {
+        toast.classList.remove("show");
+        clearTimeout(toastTimer);
+      }
 
       function showToast() {
-        clearTimeout(toastTimer);
-        toast.classList.add("is-visible");
-        toastTimer = window.setTimeout(() => {
-          toast.classList.remove("is-visible");
-        }, 2500);
+        hideToast();
+        toast.classList.add("show");
+        toastTimer = setTimeout(hideToast, 2500);
       }
 
-      function closeModal({ restoreFocus = true } = {}) {
-        if (!activeModal) return;
+      function closeOverlay() {
+        if (!activeOverlay) return;
 
-        const closingModal = activeModal;
-        const relatedButton = modalButtonMap.get(closingModal);
-
-        closingModal.classList.remove("is-open");
-        closingModal.setAttribute("aria-hidden", "true");
-
-        if (relatedButton) {
-          relatedButton.classList.remove("active");
-          relatedButton.setAttribute("aria-expanded", "false");
-        }
-
+        activeOverlay.classList.remove("open");
+        activeOverlay.setAttribute("aria-hidden", "true");
+        detailButton.classList.remove("active");
+        qrButton.classList.remove("active");
         document.body.classList.remove("modal-open");
-        activeModal = null;
-        toast.classList.remove("is-visible");
-        clearTimeout(toastTimer);
-
-        if (restoreFocus && previousFocus instanceof HTMLElement) {
-          previousFocus.focus();
-        }
+        activeOverlay = null;
+        hideToast();
       }
 
-      function openModal(modal, button, { withToast = false } = {}) {
-        /* 같은 메뉴를 한 번 더 누르면 원래 화면으로 돌아갑니다. */
-        if (activeModal === modal) {
-          closeModal();
+      function openOverlay(overlay, button, withToast = false) {
+        if (activeOverlay === overlay) {
+          closeOverlay();
           return;
         }
 
-        if (activeModal) {
-          closeModal({ restoreFocus: false });
-        }
+        closeOverlay();
 
-        previousFocus = document.activeElement;
-        activeModal = modal;
-
-        modal.classList.add("is-open");
-        modal.setAttribute("aria-hidden", "false");
+        activeOverlay = overlay;
+        overlay.classList.add("open");
+        overlay.setAttribute("aria-hidden", "false");
         button.classList.add("active");
-        button.setAttribute("aria-expanded", "true");
         document.body.classList.add("modal-open");
 
-        if (withToast) {
-          showToast();
-        }
-
-        const firstFocusable = modal.querySelector(
-          "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-        );
-
-        if (firstFocusable instanceof HTMLElement) {
-          firstFocusable.focus();
-        }
+        if (withToast) showToast();
       }
 
       detailButton.addEventListener("click", () => {
-        openModal(detailModal, detailButton);
+        openOverlay(detailOverlay, detailButton);
       });
 
       qrButton.addEventListener("click", () => {
-        openModal(qrModal, qrButton, { withToast: true });
+        openOverlay(qrOverlay, qrButton, true);
       });
 
-      /* 메인 파란 티켓 버튼도 QR 모달을 엽니다. */
-      ticketButton.addEventListener("click", () => {
-        openModal(qrModal, qrButton, { withToast: true });
+      mainTicketButton.addEventListener("click", () => {
+        openOverlay(qrOverlay, qrButton, true);
       });
 
-      document.querySelectorAll("[data-close-modal]").forEach((button) => {
-        button.addEventListener("click", () => closeModal());
+      document.querySelectorAll("[data-close]").forEach((button) => {
+        button.addEventListener("click", closeOverlay);
       });
 
-      [detailModal, qrModal].forEach((modal) => {
-        modal.addEventListener("click", (event) => {
-          if (event.target === modal) {
-            closeModal();
-          }
+      [detailOverlay, qrOverlay].forEach((overlay) => {
+        overlay.addEventListener("click", (event) => {
+          if (event.target === overlay) closeOverlay();
         });
       });
 
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-          closeModal();
-        }
+        if (event.key === "Escape") closeOverlay();
       });
     })();
   </script>
 </body>
 </html>
-
