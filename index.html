@@ -32,7 +32,7 @@
       min-height: 100%;
       margin: 0;
       overflow-x: hidden;
-      background: var(--ticket-bg);
+      background: #fff;
       color: var(--text);
       font-family:
         Roboto,
@@ -73,6 +73,12 @@
       width: 91.6666667%;
       max-width: 600px;
       min-width: 0;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .ticket-column.spring-back {
+      transition: transform 360ms cubic-bezier(.22, .8, .24, 1);
     }
 
     .ticket-card {
@@ -556,12 +562,12 @@
 
           <section class="info-section">
             <p class="info-label">座席番号</p>
-            <p class="ticket-attr">ネット裏　２１６ブロック　16列　85番</p>
+            <p class="ticket-attr">アリーナ　ハナショウブ２ブロック　6列　11番</p>
           </section>
 
           <section class="info-section">
             <p class="info-label">氏名</p>
-            <p class="ticket-attr">ジョン　ドンフン</p>
+            <p class="ticket-attr">イ　スンミン</p>
           </section>
 
           <div class="roulette" aria-hidden="true"></div>
@@ -662,12 +668,12 @@
 
         <div class="detail-row">
           <p class="detail-label">座席番号</p>
-          <p class="detail-value">ネット裏　２１６ブロック　16列　85番</p>
+          <p class="detail-value">アリーナ　ハナショウブ２ブロック　6列　11番</p>
         </div>
 
         <div class="detail-row">
           <p class="detail-label">氏名</p>
-          <p class="detail-value">ジョン　ドンフン</p>
+          <p class="detail-value">イ　スンミン</p>
         </div>
 
         <div class="notice">
@@ -781,6 +787,97 @@
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") closeOverlay();
       });
+
+      /*
+        화면 전체를 사진처럼 살짝 끌었다가 놓으면 제자리로 돌아오는 효과.
+        - 좌우: 어느 위치에서나 탄성 이동
+        - 위: 페이지 최상단에서 아래로 당길 때
+        - 아래: 페이지 최하단에서 위로 당길 때
+        - 일반적인 세로 스크롤은 그대로 유지
+      */
+      const ticketColumn = document.querySelector(".ticket-column");
+
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let dragX = 0;
+      let dragY = 0;
+      let dragging = false;
+
+      function resistance(value) {
+        const sign = Math.sign(value);
+        const abs = Math.abs(value);
+        return sign * Math.min(92, abs * 0.34);
+      }
+
+      function resetSpring() {
+        dragging = false;
+        dragX = 0;
+        dragY = 0;
+
+        ticketColumn.classList.add("spring-back");
+        ticketColumn.style.transform = "translate3d(0, 0, 0)";
+
+        window.setTimeout(() => {
+          ticketColumn.classList.remove("spring-back");
+        }, 380);
+      }
+
+      document.addEventListener(
+        "touchstart",
+        (event) => {
+          if (event.touches.length !== 1) return;
+          if (activeOverlay) return;
+
+          dragStartX = event.touches[0].clientX;
+          dragStartY = event.touches[0].clientY;
+          dragX = 0;
+          dragY = 0;
+          dragging = true;
+
+          ticketColumn.classList.remove("spring-back");
+        },
+        { passive: true }
+      );
+
+      document.addEventListener(
+        "touchmove",
+        (event) => {
+          if (!dragging || event.touches.length !== 1 || activeOverlay) return;
+
+          const x = event.touches[0].clientX;
+          const y = event.touches[0].clientY;
+          const rawX = x - dragStartX;
+          const rawY = y - dragStartY;
+
+          const isAtTop = window.scrollY <= 0;
+          const isAtBottom =
+            window.innerHeight + window.scrollY >=
+            document.documentElement.scrollHeight - 1;
+
+          dragX = resistance(rawX);
+
+          if (isAtTop && rawY > 0) {
+            dragY = resistance(rawY);
+          } else if (isAtBottom && rawY < 0) {
+            dragY = resistance(rawY);
+          } else {
+            dragY = 0;
+          }
+
+          const horizontalGesture = Math.abs(rawX) > Math.abs(rawY);
+          const verticalEdgeGesture = dragY !== 0;
+
+          if (horizontalGesture || verticalEdgeGesture) {
+            event.preventDefault();
+            ticketColumn.style.transform =
+              `translate3d(${dragX}px, ${dragY}px, 0)`;
+          }
+        },
+        { passive: false }
+      );
+
+      document.addEventListener("touchend", resetSpring, { passive: true });
+      document.addEventListener("touchcancel", resetSpring, { passive: true });
     })();
   </script>
 </body>
