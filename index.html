@@ -21,10 +21,17 @@
       box-sizing: border-box;
     }
 
-    html,
+    html {
+      margin: 0;
+      min-height: 100%;
+      background: #ffffff;
+      overscroll-behavior-y: none;
+    }
+
     body {
       margin: 0;
       min-height: 100%;
+      overflow-x: hidden;
       background: var(--page-bg);
       color: var(--text);
       font-family:
@@ -40,9 +47,9 @@
 
     body {
       padding:
-        max(var(--outer-gap), env(safe-area-inset-top))
-        var(--outer-gap)
-        max(var(--outer-gap), env(safe-area-inset-bottom));
+        max(20px, env(safe-area-inset-top))
+        20px
+        max(20px, env(safe-area-inset-bottom));
     }
 
     button {
@@ -50,13 +57,19 @@
     }
 
     .app {
-      min-height: calc(100svh - (var(--outer-gap) * 2));
+      width: 100%;
+      max-width: 760px;
+      min-width: 0;
+      min-height: calc(100svh - 40px);
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 18px;
     }
 
     .ticket-card {
+      width: 100%;
+      min-width: 0;
       flex: 1;
       overflow: hidden;
       background: var(--card-bg);
@@ -65,13 +78,14 @@
     }
 
     .ticket-body {
-      padding: 0 25px;
+      min-width: 0;
+      padding: 0 28px;
     }
 
     /* logo.png를 이 영역에 표시합니다. */
     .logo-area {
       position: relative;
-      height: clamp(500px, 50svh, 690px);
+      height: clamp(500px, 56svh, 680px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -110,12 +124,14 @@
     }
 
     .event-date {
-      margin: 0 0 6px;
-      font-size: clamp(31px, 5.3vw, 43px);
+      margin: 0 0 8px;
+      max-width: 100%;
+      font-size: clamp(28px, 6.4vw, 43px);
       font-weight: 900;
-      line-height: 1.2;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
+      line-height: 1.18;
+      letter-spacing: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     .event-times,
@@ -146,27 +162,30 @@
     .seat,
     .name {
       margin: 0;
-      font-size: clamp(28px, 4.4vw, 37px);
+      max-width: 100%;
+      font-size: clamp(27px, 6vw, 37px);
       font-weight: 900;
-      line-height: 1.35;
-      letter-spacing: 0.03em;
+      line-height: 1.38;
+      letter-spacing: 0.02em;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
 
     .seat {
-      white-space: nowrap;
+      white-space: normal;
     }
 
     .perforation {
       position: relative;
       height: 44px;
-      margin: 0 -25px;
+      margin: 0 -28px;
     }
 
     .perforation::before {
       content: "";
       position: absolute;
-      left: 25px;
-      right: 25px;
+      left: 28px;
+      right: 28px;
       top: 50%;
       border-top: 3px dashed #191919;
       transform: translateY(-50%);
@@ -191,8 +210,10 @@
     }
 
     .ticket-bottom {
+      width: 100%;
+      min-width: 0;
       min-height: 205px;
-      padding: 14px 25px 22px;
+      padding: 14px 28px 22px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 117px;
       align-items: center;
@@ -255,6 +276,8 @@
     }
 
     .bottom-nav {
+      width: 100%;
+      min-width: 0;
       height: var(--nav-height);
       flex: 0 0 var(--nav-height);
       display: grid;
@@ -532,79 +555,143 @@
       }
     }
 
-    @media (max-width: 420px) {
+    @media (max-width: 520px) {
       :root {
         --nav-height: 78px;
       }
 
+      body {
+        padding:
+          max(16px, env(safe-area-inset-top))
+          16px
+          max(16px, env(safe-area-inset-bottom));
+      }
+
+      .app {
+        min-height: calc(100svh - 32px);
+        gap: 16px;
+      }
+
       .ticket-body {
-        padding: 0 20px;
+        padding: 0 28px;
       }
 
       .logo-area {
-        height: 43svh;
-        min-height: 360px;
+        height: clamp(500px, 58svh, 650px);
       }
 
       .event-info {
-        padding-top: 14px;
-        padding-bottom: 22px;
+        padding-top: 18px;
+        padding-bottom: 24px;
+      }
+
+      .eyebrow {
+        font-size: clamp(18px, 4.5vw, 22px);
       }
 
       .event-date {
-        font-size: 29px;
+        font-size: clamp(27px, 7.1vw, 36px);
+      }
+
+      .event-times,
+      .venue,
+      .address {
+        font-size: clamp(17px, 4.4vw, 21px);
+      }
+
+      .label {
+        font-size: clamp(17px, 4.4vw, 21px);
       }
 
       .seat,
       .name {
-        font-size: 27px;
+        font-size: clamp(27px, 7vw, 35px);
       }
 
       .perforation {
-        margin: 0 -20px;
+        margin: 0 -28px;
       }
 
       .perforation::before {
-        left: 20px;
-        right: 20px;
+        left: 28px;
+        right: 28px;
       }
 
       .ticket-bottom {
-        min-height: 180px;
-        grid-template-columns: minmax(0, 1fr) 92px;
+        min-height: 190px;
+        grid-template-columns: minmax(0, 1fr) 112px;
         gap: 18px;
-        padding: 12px 20px 18px;
+        padding: 16px 28px 22px;
       }
 
       .portrait-frame {
-        width: 92px;
-        height: 125px;
+        width: 112px;
+        height: 150px;
       }
 
       .ticket-button {
-        height: 58px;
+        height: 62px;
       }
 
       .nav-item span {
-        font-size: 14px;
+        font-size: 15px;
       }
     }
 
-    @media (max-width: 350px) {
+    @media (max-width: 390px) {
+      body {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .app {
+        gap: 10px;
+      }
+
+      .ticket-body {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .logo-area {
+        height: clamp(450px, 55svh, 590px);
+      }
+
       .event-date {
-        font-size: 25px;
+        font-size: clamp(25px, 7vw, 31px);
       }
 
       .event-times,
       .venue,
       .address,
       .eyebrow {
-        font-size: 16px;
+        font-size: clamp(16px, 4.4vw, 19px);
       }
 
       .seat,
       .name {
-        font-size: 23px;
+        font-size: clamp(25px, 7vw, 31px);
+      }
+
+      .perforation {
+        margin-left: -24px;
+        margin-right: -24px;
+      }
+
+      .perforation::before {
+        left: 24px;
+        right: 24px;
+      }
+
+      .ticket-bottom {
+        grid-template-columns: minmax(0, 1fr) 96px;
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .portrait-frame {
+        width: 96px;
+        height: 128px;
       }
     }
   </style>
@@ -635,7 +722,7 @@
 
           <div class="section">
             <p class="label">座席番号</p>
-            <p class="seat">アリーナ　ハナショウブ２ブロック　６列　11番</p>
+            <p class="seat">アリーナ　ハナショウブ２ブロック　6列　11番</p>
           </div>
 
           <div class="section">
