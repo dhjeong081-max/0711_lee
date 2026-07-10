@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#4b4b4b" />
+  <title>チケット</title>
+
+  <style>
+    :root {
+      --page-bg: #4a4a4a;
+      --card-bg: #ffffff;
+      --text: #050505;
+      --muted: #767676;
+      --blue: #2589df;
+      --outer-gap: 5px;
+      --nav-height: 86px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans JP",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
+    }
+
+    body {
+      padding:
+        max(var(--outer-gap), env(safe-area-inset-top))
+        var(--outer-gap)
+        max(var(--outer-gap), env(safe-area-inset-bottom));
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      min-height: calc(100svh - (var(--outer-gap) * 2));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ticket-card {
+      flex: 1;
+      overflow: hidden;
+      background: var(--card-bg);
+      border-radius: 7px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
+    }
+
+    .ticket-body {
+      padding: 0 25px;
+    }
+
+    /* logo.png를 이 영역에 표시합니다. */
+    .logo-area {
+      position: relative;
+      height: clamp(500px, 50svh, 690px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .logo-area::before {
+      content: "logo.png";
+      position: absolute;
+      color: #d0d0d0;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .logo-image {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .event-info {
+      padding-top: 18px;
+      padding-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 9px;
+      font-size: clamp(18px, 3.1vw, 23px);
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .event-date {
+      margin: 0 0 6px;
+      font-size: clamp(31px, 5.3vw, 43px);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .event-times,
+    .venue,
+    .address {
+      margin: 0;
+      font-size: clamp(18px, 3.15vw, 23px);
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .venue {
+      margin-top: 2px;
+    }
+
+    .section {
+      margin-top: 22px;
+    }
+
+    .label {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: clamp(18px, 3.1vw, 23px);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .seat,
+    .name {
+      margin: 0;
+      font-size: clamp(28px, 4.4vw, 37px);
+      font-weight: 900;
+      line-height: 1.35;
+      letter-spacing: 0.03em;
+    }
+
+    .seat {
+      white-space: nowrap;
+    }
+
+    .perforation {
+      position: relative;
+      height: 44px;
+      margin: 0 -25px;
+    }
+
+    .perforation::before {
+      content: "";
+      position: absolute;
+      left: 25px;
+      right: 25px;
+      top: 50%;
+      border-top: 3px dashed #191919;
+      transform: translateY(-50%);
+    }
+
+    .notch {
+      position: absolute;
+      top: 50%;
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: var(--page-bg);
+      transform: translateY(-50%);
+    }
+
+    .notch.left {
+      left: -22px;
+    }
+
+    .notch.right {
+      right: -22px;
+    }
+
+    .ticket-bottom {
+      min-height: 205px;
+      padding: 14px 25px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 117px;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .ticket-button {
+      width: min(100%, 325px);
+      height: 68px;
+      border: 2px solid #ffffff;
+      outline: 2px solid var(--blue);
+      border-radius: 0;
+      background: var(--blue);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: none;
+    }
+
+    .ticket-button:active {
+      transform: translateY(1px);
+      filter: brightness(0.95);
+    }
+
+    .ticket-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    /* face.jpg를 이 영역에 표시합니다. */
+    .portrait-frame {
+      position: relative;
+      width: 117px;
+      height: 157px;
+      align-self: end;
+      overflow: hidden;
+      background: #f3f3f3;
+    }
+
+    .portrait-frame::before {
+      content: "face.jpg";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #b9b9b9;
+      font-size: 12px;
+    }
+
+    .portrait-image {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .bottom-nav {
+      height: var(--nav-height);
+      flex: 0 0 var(--nav-height);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #fff;
+      border-top: 1px solid #d7d7d7;
+      box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-item {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #515151;
+      padding: 8px 4px 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
+    .nav-item svg {
+      width: 30px;
+      height: 30px;
+      stroke: currentColor;
+    }
+
+    .nav-item span {
+      font-size: 16px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+
+    /* ---------- modal ---------- */
+    body.modal-open {
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .nav-item.active {
+      color: #087b72;
+      background: rgba(8, 123, 114, 0.10);
+    }
+
+    .modal-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        14px
+        max(18px, env(safe-area-inset-bottom));
+      background: rgba(0, 0, 0, 0.56);
+      overscroll-behavior: contain;
+    }
+
+    .modal-layer.is-open {
+      display: flex;
+    }
+
+    .modal-panel {
+      width: min(100%, 720px);
+      max-height: calc(100svh - 36px);
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fff;
+      color: #171717;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.32);
+      animation: modal-in 160ms ease-out;
+    }
+
+    @keyframes modal-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .detail-modal {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .detail-scroll {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 34px 44px 26px;
+    }
+
+    .detail-row {
+      padding: 0 6px 22px;
+      border-bottom: 1px solid #d7d7d7;
+    }
+
+    .detail-row + .detail-row {
+      padding-top: 22px;
+    }
+
+    .detail-label {
+      margin: 0 0 10px;
+      color: #777;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .detail-value {
+      margin: 0;
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1.42;
+    }
+
+    .detail-value.seat-value {
+      font-size: 27px;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .notice {
+      padding: 27px 6px 10px;
+    }
+
+    .notice-title {
+      margin: 0 0 28px;
+      font-size: 25px;
+      font-weight: 500;
+    }
+
+    .notice-list {
+      margin: 0;
+      padding-left: 42px;
+      font-size: 21px;
+      line-height: 1.65;
+    }
+
+    .detail-footer {
+      padding: 13px 34px 20px;
+      border-top: 1px solid #ececec;
+      background: #fff;
+      text-align: right;
+    }
+
+    .modal-close {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #555;
+      padding: 8px 10px;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .qr-modal-panel {
+      width: min(calc(100vw - 28px), 720px);
+      padding: clamp(26px, 5vw, 50px);
+      border-radius: 8px;
+    }
+
+    .qr-image-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background:
+        linear-gradient(45deg, #f5f5f5 25%, transparent 25%) 0 0 / 22px 22px,
+        linear-gradient(-45deg, #f5f5f5 25%, transparent 25%) 0 11px / 22px 22px,
+        linear-gradient(45deg, transparent 75%, #f5f5f5 75%) 11px -11px / 22px 22px,
+        linear-gradient(-45deg, transparent 75%, #f5f5f5 75%) -11px 0 / 22px 22px,
+        #fff;
+    }
+
+    .qr-image-wrap::before {
+      content: "qr.png";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #aaa;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+    }
+
+    .qr-image {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      image-rendering: pixelated;
+      background: #fff;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 1100;
+      top: max(18px, env(safe-area-inset-top));
+      left: 50%;
+      width: min(calc(100vw - 28px), 720px);
+      transform: translate(-50%, -14px);
+      padding: 22px 30px;
+      border-radius: 7px;
+      background: #4998e7;
+      color: #fff;
+      font-size: clamp(18px, 4vw, 25px);
+      line-height: 1.35;
+      box-shadow: 0 7px 18px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 520px) {
+      .modal-layer {
+        padding: max(18px, env(safe-area-inset-top)) 14px
+          max(18px, env(safe-area-inset-bottom));
+      }
+
+      .detail-scroll {
+        padding: 28px 27px 20px;
+      }
+
+      .detail-label {
+        font-size: 18px;
+      }
+
+      .detail-value {
+        font-size: 21px;
+      }
+
+      .detail-value.seat-value {
+        font-size: clamp(18px, 4.8vw, 22px);
+        white-space: normal;
+      }
+
+      .notice-title {
+        margin-bottom: 20px;
+        font-size: 21px;
+      }
+
+      .notice-list {
+        padding-left: 31px;
+        font-size: 18px;
+      }
+
+      .detail-footer {
+        padding: 10px 25px 15px;
+      }
+
+      .modal-close {
+        font-size: 18px;
+      }
+
+      .qr-modal-panel {
+        padding: 28px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      :root {
+        --nav-height: 78px;
+      }
+
+      .ticket-body {
+        padding: 0 20px;
+      }
+
+      .logo-area {
+        height: 43svh;
+        min-height: 360px;
+      }
+
+      .event-info {
+        padding-top: 14px;
+        padding-bottom: 22px;
+      }
+
+      .event-date {
+        font-size: 29px;
+      }
+
+      .seat,
+      .name {
+        font-size: 27px;
+      }
+
+      .perforation {
+        margin: 0 -20px;
+      }
+
+      .perforation::before {
+        left: 20px;
+        right: 20px;
+      }
+
+      .ticket-bottom {
+        min-height: 180px;
+        grid-template-columns: minmax(0, 1fr) 92px;
+        gap: 18px;
+        padding: 12px 20px 18px;
+      }
+
+      .portrait-frame {
+        width: 92px;
+        height: 125px;
+      }
+
+      .ticket-button {
+        height: 58px;
+      }
+
+      .nav-item span {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 350px) {
+      .event-date {
+        font-size: 25px;
+      }
+
+      .event-times,
+      .venue,
+      .address,
+      .eyebrow {
+        font-size: 16px;
+      }
+
+      .seat,
+      .name {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section class="ticket-card">
+      <div class="ticket-body">
+        <div class="logo-area">
+          <!-- 같은 폴더에 logo.png를 넣으세요. -->
+          <img
+            class="logo-image"
+            src="./logo.png"
+            alt="Bloom Garden Party"
+            onerror="this.style.display='none'"
+          />
+        </div>
+
+        <div class="event-info">
+          <p class="eyebrow">7月11日（土）16:00公演</p>
+
+          <h1 class="event-date">2026年7月11日（土）16:00</h1>
+
+          <p class="event-times">[開場] 14:00　[開演] 16:00</p>
+          <p class="venue">ベルーナドーム</p>
+          <p class="address">埼玉県所沢市上山口2135</p>
+
+          <div class="section">
+            <p class="label">座席番号</p>
+            <p class="seat">アリーナ　ハナショウブ２ブロック　６列　11番</p>
+          </div>
+
+          <div class="section">
+            <p class="label">氏名</p>
+            <p class="name">イ　スンミン</p>
+          </div>
+        </div>
+
+        <div class="perforation" aria-hidden="true">
+          <span class="notch left"></span>
+          <span class="notch right"></span>
+        </div>
+      </div>
+
+      <div class="ticket-bottom">
+        <button class="ticket-button" type="button" aria-label="チケットを表示">
+          <svg class="ticket-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path
+              d="M5 8.5h22v5a3 3 0 0 0 0 5v5H5v-5a3 3 0 0 0 0-5v-5Z"
+              stroke="currentColor"
+              stroke-width="2.7"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M16 10.5v2M16 15v2M16 19.5v2"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+        <div class="portrait-frame">
+          <!-- 같은 폴더에 face.jpg를 넣으세요. -->
+          <img
+            class="portrait-image"
+            src="./face.jpg"
+            alt="本人写真"
+            onerror="this.style.display='none'"
+          />
+        </div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" aria-label="チケットメニュー">
+      <button class="nav-item" type="button" onclick="history.back()">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 5 8 12l7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>戻る</span>
+      </button>
+
+      <button
+        id="detailNavButton"
+        class="nav-item"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="detailModal"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 7h12M6 12h12M6 17h12" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>チケット詳細</span>
+      </button>
+
+      <button
+        id="qrNavButton"
+        class="nav-item"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="qrModal"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 4h5v5H4zM15 4h5v5h-5zM4 15h5v5H4z" stroke-width="1.8"/>
+          <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2zM16 16h2v2h-2z" fill="currentColor" stroke="none"/>
+        </svg>
+        <span>QRコード</span>
+      </button>
+    </nav>
+
+  </main>
+
+  <!-- チケット詳細 -->
+  <div
+    id="detailModal"
+    class="modal-layer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="detailModalTitle"
+    aria-hidden="true"
+  >
+    <section class="modal-panel detail-modal">
+      <div class="detail-scroll">
+        <div class="detail-row">
+          <p id="detailModalTitle" class="detail-label">公演日</p>
+          <p class="detail-value">2026年7月11日（土）16:00</p>
+        </div>
+
+        <div class="detail-row">
+          <p class="detail-label">開場時間</p>
+          <p class="detail-value">14:00</p>
+        </div>
+
+        <div class="detail-row">
+          <p class="detail-label">開演時間</p>
+          <p class="detail-value">16:00</p>
+        </div>
+
+        <div class="detail-row">
+          <p class="detail-label">会場</p>
+          <p class="detail-value">ベルーナドーム</p>
+        </div>
+
+        <div class="detail-row">
+          <p class="detail-label">住所</p>
+          <p class="detail-value">埼玉県所沢市上山口2135</p>
+        </div>
+
+        <div class="detail-row">
+          <p class="detail-label">座席番号</p>
+          <p class="detail-value seat-value">アリーナ　ハナショウブ２ブロック　6列　11番</p>
+        </div>
+
+        <div class="detail-row">
+          <p class="detail-label">氏名</p>
+          <p class="detail-value">イ　スンミン</p>
+        </div>
+
+        <div class="notice">
+          <p class="notice-title">※注意事項※</p>
+          <ul class="notice-list">
+            <li>
+              チケット購入時には必ず日時と席種をご確認の上お求めください。
+              購入後の変更は一切できません
+            </li>
+            <li>電子チケットは1枚につき1回限り有効です</li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="detail-footer">
+        <button class="modal-close" type="button" data-close-modal>閉じる</button>
+      </footer>
+    </section>
+  </div>
+
+  <!-- QRコード -->
+  <div
+    id="qrModal"
+    class="modal-layer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="QRコード"
+    aria-hidden="true"
+  >
+    <section class="modal-panel qr-modal-panel">
+      <div class="qr-image-wrap">
+        <!-- 같은 폴더에 qr.png를 넣으세요. -->
+        <img
+          class="qr-image"
+          src="./qr.png"
+          alt="入場用QRコード"
+          onerror="this.style.display='none'"
+        />
+      </div>
+    </section>
+  </div>
+
+  <div id="tapAgainToast" class="toast" role="status" aria-live="polite">
+    もう一度タップすると元に戻ります
+  </div>
+
+  <script>
+    (() => {
+      const detailModal = document.getElementById("detailModal");
+      const qrModal = document.getElementById("qrModal");
+      const detailButton = document.getElementById("detailNavButton");
+      const qrButton = document.getElementById("qrNavButton");
+      const ticketButton = document.querySelector(".ticket-button");
+      const toast = document.getElementById("tapAgainToast");
+
+      let activeModal = null;
+      let previousFocus = null;
+      let toastTimer = null;
+
+      const modalButtonMap = new Map([
+        [detailModal, detailButton],
+        [qrModal, qrButton],
+      ]);
+
+      function showToast() {
+        clearTimeout(toastTimer);
+        toast.classList.add("is-visible");
+        toastTimer = window.setTimeout(() => {
+          toast.classList.remove("is-visible");
+        }, 2500);
+      }
+
+      function closeModal({ restoreFocus = true } = {}) {
+        if (!activeModal) return;
+
+        const closingModal = activeModal;
+        const relatedButton = modalButtonMap.get(closingModal);
+
+        closingModal.classList.remove("is-open");
+        closingModal.setAttribute("aria-hidden", "true");
+
+        if (relatedButton) {
+          relatedButton.classList.remove("active");
+          relatedButton.setAttribute("aria-expanded", "false");
+        }
+
+        document.body.classList.remove("modal-open");
+        activeModal = null;
+        toast.classList.remove("is-visible");
+        clearTimeout(toastTimer);
+
+        if (restoreFocus && previousFocus instanceof HTMLElement) {
+          previousFocus.focus();
+        }
+      }
+
+      function openModal(modal, button, { withToast = false } = {}) {
+        /* 같은 메뉴를 한 번 더 누르면 원래 화면으로 돌아갑니다. */
+        if (activeModal === modal) {
+          closeModal();
+          return;
+        }
+
+        if (activeModal) {
+          closeModal({ restoreFocus: false });
+        }
+
+        previousFocus = document.activeElement;
+        activeModal = modal;
+
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        button.classList.add("active");
+        button.setAttribute("aria-expanded", "true");
+        document.body.classList.add("modal-open");
+
+        if (withToast) {
+          showToast();
+        }
+
+        const firstFocusable = modal.querySelector(
+          "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+        );
+
+        if (firstFocusable instanceof HTMLElement) {
+          firstFocusable.focus();
+        }
+      }
+
+      detailButton.addEventListener("click", () => {
+        openModal(detailModal, detailButton);
+      });
+
+      qrButton.addEventListener("click", () => {
+        openModal(qrModal, qrButton, { withToast: true });
+      });
+
+      /* 메인 파란 티켓 버튼도 QR 모달을 엽니다. */
+      ticketButton.addEventListener("click", () => {
+        openModal(qrModal, qrButton, { withToast: true });
+      });
+
+      document.querySelectorAll("[data-close-modal]").forEach((button) => {
+        button.addEventListener("click", () => closeModal());
+      });
+
+      [detailModal, qrModal].forEach((modal) => {
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
